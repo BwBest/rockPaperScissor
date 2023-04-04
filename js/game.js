@@ -7,100 +7,124 @@ let playerChoice;
 const rockRef = document.querySelector('#rock');
 const paperRef = document.querySelector('#paper');
 const scissorRef = document.querySelector('#scissor');
+const restartRef = document.querySelector('#restart');
 
+
+// TEXT and TEXT MANIPULATION
+const canvasRef = document.querySelector('#canvas');
+const textRef = document.querySelector('#text');
+const scoreTextRef = document.querySelector('#score-text');
+
+function changeText(string){
+    textRef.textContent = string;
+}
+
+function changeScoreboard(string){
+    scoreTextRef.textContent = string;
+}
+
+
+// GET CHOICES
 function getComputerChoice(){
-	switch(Math.floor(Math.random()*3)){
-		case 0:
-			console.log("computer chose rock");
-			return 0;
-		case 1:
-			console.log("computer chose paper");
-			return 1;
-		case 2:
-			console.log("computer chose scissor");
-			return 2;
-	}
+    return Math.floor(Math.random()*3); //0-rock, 1-paper, 2-scissor
 }
 
 function getPlayerChoice(e){
-	// let pChoice = prompt("Choose rock, paper or scissors");
-	// pChoice = pChoice.toLowerCase();
     const pChoice = e.currentTarget.getAttribute('id');
 	switch(pChoice){
 		case "rock":
-			console.log("player chose rock");
 			playerChoice = 0;
             break;
 		case "paper":
-			console.log("player chose paper");
 			playerChoice = 1;
             break;
 		case "scissor":
-			console.log("player chose scissor");
 			playerChoice = 2;
             break;
 		default:
 			return Math.floor(Math.random()*3);
 	}
+
+    playRound(playerChoice, getComputerChoice());
 }
 
+
+//INITIATE GAME
+function playRound(playerSelection, computerSelection){
+	decideWinner(playerSelection, computerSelection);
+}
+
+
+// GAME LOGIC
 function decideWinner(playerSelection, computerSelection){
 	// 0 = rock, 1 = paper, 2 = scissor
 	if(playerSelection === 0){ // ROCK
 		if(computerSelection === 0){
-			alert("It's a draw");
+			changeText("Rock v rock, It's a draw");
 		}
 		if(computerSelection === 1){
-			alert("Computer wins! (computer chose paper)");
+			changeText("Paper beats rock, Computer wins!");
 			computerScore++;
 		}
 		if(computerSelection === 2){
-			alert("You win! (computer chose scissor)");
+			changeText("Rock beats scissor, You win!");
 			playerScore++;
 		}
 	}
 	if(playerSelection === 1){ // PAPER
 		if(computerSelection === 0){
-			alert("You win! (computer chose rock)");
+			changeText("Paper beats rock, You win!");
 			playerScore++;
 		}
 		if(computerSelection === 1){
-			alert("It's a draw");
+			changeText("Paper v paper, It's a draw");
 		}
 		if(computerSelection === 2){
-			alert("Computer wins! (computer chose scissor)");
+			changeText("Scissor beats paper, Computer wins!");
 			computerScore++;
 		}
 	}
 	if(playerSelection === 2){ // SCISSOR
 		if(computerSelection === 0){
-			alert("Computer wins! (computer chose rock)");
+			changeText("Rock beats scissor, Computer wins!");
 			computerScore++;
 		}
 		if(computerSelection === 1){
-			alert("You win! (computer chose paper)");
+			changeText("Scissor beats paper, You win!");
 			playerScore++;
 		}
 		if(computerSelection === 2){
-			alert("It's a draw");
+			changeText("Scissor v scissor, It's a draw");
 		}
 	}
 
-	console.log("Player score: " + playerScore, "Computer score: " + computerScore);
+	changeScoreboard(`Player Score: ${playerScore}, Computer Score: ${computerScore}`);
+    checkGameFinished();
 }
 
-function playRound(playerSelection, computerSelection){
-	decideWinner(playerSelection, computerSelection);
+function checkGameFinished(){
+    if(playerScore >= 5) { changeText('Congratz! You Won!'); promptRestart(); }
+    if(computerScore >= 5) { changeText('Oh no! Computer Won!'); promptRestart(); }
 }
 
-function game(){
-	// while(computerScore < 5 && playerScore < 5){
-	// 	playRound(getPlayerChoice(),getComputerChoice());
-	// }
+function promptRestart(){
+    //Hide/show game game buttons
+    rockRef.classList.toggle('hide');
+    paperRef.classList.toggle('hide');
+    scissorRef.classList.toggle('hide'); 
+    //Show/hide restart button
+    restartRef.classList.toggle('hide');
 }
 
-game();
+function restartGame(){
+    playerScore = 0;
+    computerScore = 0;
+    changeText('Choose one to start the game!');
+    changeScoreboard('Player score: 0, Computer Score: 0');
+    promptRestart();
+}
 
 rockRef.addEventListener('click', getPlayerChoice);
 paperRef.addEventListener('click', getPlayerChoice);
 scissorRef.addEventListener('click', getPlayerChoice);
+restartRef.addEventListener('click', restartGame);
